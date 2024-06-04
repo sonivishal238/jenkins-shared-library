@@ -5,7 +5,7 @@ def printRepoName(String repoName) {
     stages {
       stage('Print Repo Name') {
         steps {
-          echo "Building microservice: ${repoName} from shared pipeline"
+          echo "Building microservice: ${repoName} from shared pipeline globals"
         }
       }
     }
