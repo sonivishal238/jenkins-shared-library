@@ -9,7 +9,7 @@ def call(Map config = [:]) {
 
         environment {
             REPO_URL = "https://github.com/sonivishal238/AutomationPOC.git"
-            BRANCH_NAME = "featurepoc2/nswag-update-${env.BUILD_ID}"
+            BRANCH_NAME = "featurepoc2/nswag-update-${env.JOB_NAME}-${env.BUILD_ID}"
         }
 
         stages {
