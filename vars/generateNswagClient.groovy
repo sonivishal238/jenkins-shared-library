@@ -8,22 +8,11 @@ def call(Map config = [:]) {
         }
 
         environment {
-            REPO_URL = 'https://github.com/sonivishal238/AutomationPOC.git'
+            REPO_URL = "https://github.com/sonivishal238/AutomationPOC.git"
             BRANCH_NAME = "featurepoc2/nswag-update-${env.BUILD_ID}"
         }
 
         stages {
-            stage('Information') {
-                steps {
-                    script {
-                        echo "SERVICE_NAME: ${params.SERVICE_NAME}"
-                        echo "SWAGGER_URL: ${params.SWAGGER_URL}"
-                        echo "REPO_URL: ${env.REPO_URL}"
-                        echo "BRANCH_NAME: ${env.BRANCH_NAME}"
-                    }
-                }
-            }
-
             stage('Clean Workspace') {
                 steps {
                     cleanWs()
