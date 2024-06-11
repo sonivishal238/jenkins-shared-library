@@ -2,17 +2,25 @@ def call(Map config = [:]) {
     pipeline {
         agent any
 
-        parameters {
-            string(name: 'SERVICE_NAME', defaultValue: config.serviceName ?: 'TestRestService', description: 'Name of the service')
-            string(name: 'SWAGGER_URL', defaultValue: config.swaggerUrl ?: 'https://fakerestapi.azurewebsites.net/swagger/v1/swagger.json', description: 'URL to the swagger.json file')
-        }
-
         environment {
+            SERVICE_NAME = "${config.serviceName ?: 'TestRestService'}"
+            SWAGGER_URL = "${config.swaggerUrl ?: 'https://fakerestapi.azurewebsites.net/swagger/v1/swagger.json'}"
             REPO_URL = "${config.repoUrl ?: 'https://github.com/sonivishal238/AutomationPOC.git'}"
             BRANCH_NAME = "featurepoc2/nswag-update-${env.BUILD_ID}"
         }
 
         stages {
+            stage('Information') {
+                steps {
+                    script {
+                        echo "SERVICE_NAME: ${env.SERVICE_NAME}"
+                        echo "SWAGGER_URL: ${env.SWAGGER_URL}"
+                        echo "REPO_URL: ${env.REPO_URL}"
+                        echo "BRANCH_NAME: ${env.BRANCH_NAME}"
+                    }
+                }
+            }
+
             stage('Clean Workspace') {
                 steps {
                     cleanWs()
@@ -55,9 +63,9 @@ def call(Map config = [:]) {
             stage('Generate NSwag Client') {
                 steps {
                     script {
-                        def nswagCommand = "nswag openapi2csclient /input:${params.SWAGGER_URL} /namespace:VishalUserActions.APIs.${params.SERVICE_NAME} /className:${params.SERVICE_NAME}Api /generateExceptionClasses:false /exceptionClass:VishalUserActions.VishalApiException /output:VishalUserActions\\NSwagGeneratedAPI\\${params.SERVICE_NAME}Api.cs"
+                        def nswagCommand = "nswag openapi2csclient /input:${env.SWAGGER_URL} /namespace:VishalUserActions.APIs.${env.SERVICE_NAME} /className:${env.SERVICE_NAME}Api /generateExceptionClasses:false /exceptionClass:VishalUserActions.VishalApiException /output:VishalUserActions\\NSwagGeneratedAPI\\${env.SERVICE_NAME}Api.cs"
                         bat nswagCommand
-                        echo "Generated NSwag client for ${params.SERVICE_NAME} using ${params.SWAGGER_URL}."
+                        echo "Generated NSwag client for ${env.SERVICE_NAME} using ${env.SWAGGER_URL}."
                     }
                 }
             }
@@ -88,7 +96,7 @@ def call(Map config = [:]) {
                         bat "git push --set-upstream origin ${env.BRANCH_NAME}"
                         echo "Pushed new branch ${env.BRANCH_NAME} to the remote repository."
                         echo """
-                        The NSwag client for ${params.SERVICE_NAME} has been generated and pushed to branch ${env.BRANCH_NAME}.
+                        The NSwag client for ${env.SERVICE_NAME} has been generated and pushed to branch ${env.BRANCH_NAME}.
                         Please create a pull request to merge this branch into the main branch.
 
                         Branch: ${env.BRANCH_NAME}
